@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
-const { promisify } = require('util')
 const User = require('../models/user');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
@@ -18,7 +17,7 @@ module.exports =  catchAsync(async (req, res, next) => {
     }
 
     // 2) Verification token
-    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+    const decoded =  jwt.verify(token, process.env.JWT_SECRET);
 
     // 3) Check if user still exists
     const currentUser = await User.findById(decoded.id);

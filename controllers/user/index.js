@@ -5,8 +5,8 @@ const catchAsync = require('../../utils/catchAsync');
 const AppError = require('../../utils/appError');
 // const sendEmail = require('./../utils/email');
 
-const signToken = (id, expireTime) => {
-    return jwt.sign({id}, process.env.JWT_SECRET, {
+const signToken = (userId, expireTime) => {
+    return jwt.sign({userId}, process.env.JWT_SECRET, {
         expiresIn: expireTime
     });
 };
@@ -29,17 +29,13 @@ const createSendToken = (user, statusCode, res) => {
 
     res.status(statusCode).json({
         status: 'success',
-        token,
-        data: {
-            user
-        }
     });
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
     const {email} = req.body
     const user = await User.findOne({email})
-    if(user){
+    if (user) {
         return res.status(500).json({status: "failed", message: "something made wrong"})
     }
     await User.create({
@@ -52,6 +48,13 @@ exports.signup = catchAsync(async (req, res, next) => {
     //add verify user ti email
     return res.status(200).json({status: "success", message: "an email sent to you, please verify you account"})
 });
+
+exports.me = catchAsync(async (req, res, next) =>
+    res.status(200).json({
+        status: 'success',
+        data: req.user
+    })
+);
 
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -68,8 +71,13 @@ exports.login = catchAsync(async (req, res, next) => {
         return next(new AppError('Incorrect email or password', 401));
     }
 
+    if (!user.active)
+        return res.status(200).json({
+            status: "failed",
+            message: 'please verify your account'
+        })
     // 3) If everything ok, send token to client
-    createSendToken(user, 200, res);
+    return createSendToken(user, 200, res);
 });
 
 

@@ -6,6 +6,7 @@ const protected = require('../../middlewares/auth')
 router.post('/signup', controller.signup);
 router.post('/login', controller.login);
 
+router.get('/me', protected,controller.me);
 // router.post('/forgotPassword', controller.forgotPassword);
 router.patch('/resetPassword/:token', controller.resetPassword);
 
