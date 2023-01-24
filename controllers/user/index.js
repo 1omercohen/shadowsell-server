@@ -37,7 +37,12 @@ const createSendToken = (user, statusCode, res) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
-    const newUser = await User.create({
+    const {email} = req.body
+    const user = await User.findOne({email})
+    if(user){
+        return res.status(500).json({status: "failed", message: "something made wrong"})
+    }
+    await User.create({
         name: req.body.name,
         email: req.body.email,
         password: req.body.password,
@@ -45,8 +50,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     });
 
     //add verify user ti email
-
-    createSendToken(newUser, 201, res);
+    return res.status(200).json({status: "success", message: "an email sent to you, please verify you account"})
 });
 
 

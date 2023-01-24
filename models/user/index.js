@@ -38,8 +38,7 @@ const userSchema = new mongoose.Schema({
     passwordResetExpires: Date,
     active: {
         type: Boolean,
-        default: true,
-        select: false
+        default: true
     },
     stores: [{type: mongoose.Schema.Types.ObjectId, ref: STORE_SCHEMA}]
 });
